@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PaymentInclination</string>
+    <string name="Add">Button</string>
+    <string name="calculateButton">CALCULATE</string>
+    <string name="totalTextView">TOTAL</string>
+    <string name="yenTextView">円</string>
+</resources>
