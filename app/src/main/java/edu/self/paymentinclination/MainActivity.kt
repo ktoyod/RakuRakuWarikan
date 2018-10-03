@@ -6,10 +6,7 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ListView
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.ceil
@@ -23,8 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         supportActionBar?.title = "ラクラク割り勘"
-
-        // TODO: ここを入力可能に
+        
         val data = mutableListOf("Layer1: 0 人", "Layer2: 0 人", "+ 階層を追加")
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, data)
@@ -53,10 +49,49 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        calcButton.setOnClickListener {
-            // TODO: ここに計算処理 & 結果をSecondActivityに渡す
-            val alpha = 3 // TODO: この値はseekbarから取るようにする
+        var alpha = 3;
 
+        // seekbar 初期値
+        seekBar.setProgress(50)
+        // seekbar 最大値
+        seekBar.setMax(100)
+
+        seekBar.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
+                    //ツマミがドラッグされると呼ばれる
+                    override fun onProgressChanged(
+                            seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                        // 68 % のようにフォーマト、
+                        // この場合、Locale.USが汎用的に推奨される
+                        if (progress < 20) {
+                            ratioText.text = "傾斜：超ゆるめ"
+                            alpha = 1
+                        } else if (progress < 40) {
+                            ratioText.text = "傾斜：ゆるめ"
+                            alpha = 2
+                        } else if (progress < 60) {
+                            ratioText.text = "傾斜：普通"
+                            alpha = 3
+                        } else if (progress < 80) {
+                            ratioText.text = "傾斜：きつめ"
+                            alpha = 4
+                        } else {
+                            ratioText.text = "傾斜：超きつめ"
+                            alpha = 5
+                        }
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {
+                        // ツマミがタッチされた時に呼ばれる
+                    }
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {
+                        // ツマミがリリースされた時に呼ばれる
+                    }
+                }
+        )
+
+        calcButton.setOnClickListener {
             val layerNum = adapter.count - 1 // 層の数
             val numList: MutableList<Int> = mutableListOf() // 各層の人数
             val ratioList: MutableList<Double> = mutableListOf() // 各層の払う金額の比率

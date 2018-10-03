@@ -17,7 +17,7 @@ class SecondActivity : AppCompatActivity() {
         setContentView(R.layout.activity_second)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Result"
+        supportActionBar?.title = "結果"
 
         // MainActivityから受け取った結果を表示する
         val intent = getIntent()
