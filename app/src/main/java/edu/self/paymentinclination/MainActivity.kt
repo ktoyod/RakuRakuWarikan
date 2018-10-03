@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.text.InputType
+import android.view.Gravity
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -34,10 +36,23 @@ class MainActivity : AppCompatActivity() {
                 adapter.insert("Layer" + (adapter.count).toString() + ": 0 人", adapter.count - 1)
                 adapter.notifyDataSetChanged()
             } else {
-                val myedit = EditText(this)
                 val dialog = AlertDialog.Builder(this)
+                // タイトル
                 dialog.setTitle("Layer" + (position + 1).toString() + "の人数を入力")
+
+                // 入力部分
+                val myedit = EditText(this)
+                val listItem = adapter.getItem(position)
+                val defaultNum = Integer.parseInt(listItem.split(" ")[1])
+                myedit.setInputType(InputType.TYPE_CLASS_NUMBER)
+                myedit.setGravity(Gravity.RIGHT)
+                myedit.requestFocus()
+                myedit.setText(defaultNum.toString())
+                myedit.setSelection(myedit.text.length)
+
                 dialog.setView(myedit)
+
+                // ボタン設定
                 dialog.setPositiveButton("OK", DialogInterface.OnClickListener{_, _ ->
                     val userNumber = myedit.getText().toString()
                     adapter.remove(adapter.getItem(position))
@@ -116,34 +131,37 @@ class MainActivity : AppCompatActivity() {
                 ratioList.add(1.0 + 1.0 * alpha * (layerNum - i - 1) / (layerNum - 1))
                 numRatioList.add(numList[i] * ratioList[i])
             }
-            val total = Integer.parseInt(totalText.getText().toString()) // トータルの金額
-            val sumNum = numRatioList.sum() // 合計
+            if (0 in numList) {
+            } else {
+                val total = Integer.parseInt(totalText.getText().toString()) // トータルの金額
+                val sumNum = numRatioList.sum() // 合計
 
-            val basePay = total / sumNum // ベースとなる金額
+                val basePay = total / sumNum // ベースとなる金額
 
-            val payList: MutableList<Int> = mutableListOf()
-            for (i in 0..layerNum - 1) {
-                var pay: Int = 0
-                if (i >= layerNum / 2) {
-                    pay = (ceil(basePay * ratioList[i] / 100) * 100).toInt()
-                } else {
-                    pay = (floor(basePay * ratioList[i] / 100) * 100).toInt()
+                val payList: MutableList<Int> = mutableListOf()
+                for (i in 0..layerNum - 1) {
+                    var pay: Int = 0
+                    if (i >= layerNum / 2) {
+                        pay = (ceil(basePay * ratioList[i] / 100) * 100).toInt()
+                    } else {
+                        pay = (floor(basePay * ratioList[i] / 100) * 100).toInt()
+                    }
+                    payList.add(pay)
                 }
-                payList.add(pay)
-            }
-            val payArray = ArrayList<Int>(payList)
+                val payArray = ArrayList<Int>(payList)
 
-            var payTotal = 0
-            for ( i in 0.. layerNum - 1) {
-                payTotal += numList[i] * payList[i]
-            }
-            val payDiff = payTotal - total
+                var payTotal = 0
+                for ( i in 0.. layerNum - 1) {
+                    payTotal += numList[i] * payList[i]
+                }
+                val payDiff = payTotal - total
 
-            val intent: Intent = Intent(this, SecondActivity::class.java)
-            intent.putExtra("PAYLIST", payArray)
-            intent.putExtra("PAYTOTAL", payTotal)
-            intent.putExtra("PAYDIFF", payDiff)
-            startActivity(intent)
+                val intent: Intent = Intent(this, SecondActivity::class.java)
+                intent.putExtra("PAYLIST", payArray)
+                intent.putExtra("PAYTOTAL", payTotal)
+                intent.putExtra("PAYDIFF", payDiff)
+                startActivity(intent)
+            }
         }
 
 
