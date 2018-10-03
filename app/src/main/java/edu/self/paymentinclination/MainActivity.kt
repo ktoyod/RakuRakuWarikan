@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         supportActionBar?.title = "ラクラク割り勘"
-        
+
         val data = mutableListOf("Layer1: 0 人", "Layer2: 0 人", "+ 階層を追加")
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, data)
@@ -44,6 +44,19 @@ class MainActivity : AppCompatActivity() {
                     adapter.insert("Layer" + (position + 1).toString() + ": " + userNumber + " 人", position)
                     adapter.notifyDataSetChanged()
                 })
+                if (position > 1) {
+                    dialog.setNeutralButton("この階層を削除", DialogInterface.OnClickListener{_, _ ->
+                        adapter.remove(adapter.getItem(position))
+                        val layerNum = adapter.count - 1
+                        for (i in position..layerNum - 1) {
+                            val item = adapter.getItem(i)
+                            val num = Integer.parseInt(item.split(" ")[1])
+                            adapter.remove(adapter.getItem(i))
+                            adapter.insert("Layer" + (i + 1).toString() + ": " + num.toString() + " 人", i)
+                        }
+                        adapter.notifyDataSetChanged()
+                    })
+                }
                 dialog.setNegativeButton("Cancel", null)
                 dialog.show()
             }
